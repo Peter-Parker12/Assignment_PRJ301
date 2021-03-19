@@ -99,6 +99,22 @@ public class BookingDaos {
         }
         return list;
     }
+    public  boolean deleteBooking(User user, String scheduleId){
+       Connection conn = null;
+       PreparedStatement prSt = null;
+       try{
+           conn = Connector.Connector();
+           int userId = user.getUserID();
+           String sql = "DELETE FROM Booking WHERE UserID = ? AND ScheduleID = ?";
+           prSt = conn.prepareStatement(sql);
+           prSt.setString(1, String.valueOf(userId));
+           prSt.setString(2, String.valueOf(scheduleId));
+           return prSt.executeUpdate() == 1;
+       }catch(Exception e){
+           e.printStackTrace();
+       }
+       return false;
+   }
 
     public boolean addBooking(int UserID, int ScheduleID) {
         String sql = "insert into Booking (UserID, ScheduleID, Booking_status) values (?, ?, '0')";

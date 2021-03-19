@@ -5,12 +5,16 @@
  */
 package ControlServlet;
 
+import DAO.BookingDaos;
+import DTO.User;
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -30,17 +34,21 @@ public class DeleteBookingServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet DeleteBookingServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet DeleteBookingServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        response.setContentType("text/html;charset=UTF-8");
+        HttpSession session = request.getSession(false);
+        User user = (User) session.getAttribute("user");
+        // Lấy scheduleID từ UI
+        String scheduleId = request.getParameter("scheduleID");
+        BookingDaos bookingDao = new BookingDaos();
+        if(bookingDao.deleteBooking(user, scheduleId)){
+            //Trở về trang chủ
+            response.sendRedirect("landingPageUser.jsp");
+        }else{
+            // Nếu delete thất bại trả về object lỗi cho trang jsp
+            RequestDispatcher rq = request.getRequestDispatcher("");
+            // Ten object lỗi là failed
+            request.setAttribute("failed", true);
+            rq.forward(request, response);
         }
     }
 
